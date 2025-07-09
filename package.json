@@ -15,7 +15,11 @@
     "format": "echo 'No formatter configured'",
     "publish:npm": "npm publish --access public",
     "publish:dry": "npm publish --dry-run",
-    "deploy": "npm run publish:npm"
+    "deploy": "npm run publish:npm",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo",
+    "db:migrate:undo:all": "sequelize-cli db:migrate:undo:all",
+    "db:create:migration": "sequelize-cli migration:generate --name"
   },
   "keywords": [
     "cli",
@@ -29,6 +33,10 @@
   },
   "dependencies": {
     "axios": "^1.10.0",
-    "dotenv": "^17.1.0"
+    "better-sqlite3": "^9.4.3",
+    "dotenv": "^17.1.0",
+    "sequelize": "^6.37.1",
+    "sequelize-cli": "^6.6.2",
+    "sqlite3": "^5.1.7"
   }
 }
