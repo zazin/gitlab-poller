@@ -19,7 +19,7 @@ class GitLabClient {
       let hasMore = true;
 
       while (hasMore) {
-        const response = await this.client.get('/groups/telkomsel/merge_requests', {
+        const response = await this.client.get(`/groups/${config.gitlab.groupId}/merge_requests`, {
           params: {
             state: 'opened',
             reviewer_username: reviewerUsername,
@@ -35,7 +35,7 @@ class GitLabClient {
         } else {
           mergeRequests.push(...response.data);
           page++;
-          
+
           // Check if we've reached the last page
           const totalPages = parseInt(response.headers['x-total-pages'] || '1');
           if (page > totalPages) {
