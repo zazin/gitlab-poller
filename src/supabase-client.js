@@ -4,10 +4,13 @@ const migrations = require('./migrations');
 
 class SupabaseClient {
   constructor() {
-    this.client = createClient(config.supabase.url, config.supabase.secretKey);
+    this.client = createClient(config.supabase.url, config.supabase.secretKey, {
+      db: {
+        schema: config.supabase.schema
+      }
+    });
     this.tableName = config.supabase.tableName;
     this.mergeRequestsTableName = 'gitlab_merge_requests';
-    this.migrationsTableName = '_migrations';
   }
 
   async insertEvents(events) {
@@ -82,31 +85,6 @@ class SupabaseClient {
 
       if (error && error.code === '42P01') { // Table does not exist
         console.error(`Table '${this.tableName}' does not exist in Supabase`);
-        console.log('Please create the table with the following structure:');
-        console.log(`
-CREATE TABLE ${this.tableName} (
-  id SERIAL PRIMARY KEY,
-  gitlab_event_id INTEGER UNIQUE NOT NULL,
-  action_name TEXT,
-  target_id INTEGER,
-  target_iid INTEGER,
-  target_type TEXT,
-  author_id INTEGER,
-  author_username TEXT,
-  created_at TIMESTAMPTZ,
-  project_id INTEGER,
-  target_title TEXT,
-  push_data JSONB,
-  note JSONB,
-  wiki_page JSONB,
-  raw_data JSONB,
-  inserted_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_gitlab_event_id ON ${this.tableName}(gitlab_event_id);
-CREATE INDEX idx_created_at ON ${this.tableName}(created_at);
-CREATE INDEX idx_project_id ON ${this.tableName}(project_id);
-        `);
         return false;
       }
 
@@ -184,48 +162,6 @@ CREATE INDEX idx_project_id ON ${this.tableName}(project_id);
 
       if (error && error.code === '42P01') { // Table does not exist
         console.error(`Table '${this.mergeRequestsTableName}' does not exist in Supabase`);
-        console.log('Please create the table with the following structure:');
-        console.log(`
-CREATE TABLE ${this.mergeRequestsTableName} (
-  id SERIAL PRIMARY KEY,
-  gitlab_mr_id INTEGER UNIQUE NOT NULL,
-  gitlab_mr_iid INTEGER NOT NULL,
-  project_id INTEGER NOT NULL,
-  title TEXT,
-  description TEXT,
-  state TEXT,
-  merged_by TEXT,
-  merge_user TEXT,
-  created_at TIMESTAMPTZ,
-  updated_at TIMESTAMPTZ,
-  closed_at TIMESTAMPTZ,
-  merged_at TIMESTAMPTZ,
-  target_branch TEXT,
-  source_branch TEXT,
-  author_id INTEGER,
-  author_username TEXT,
-  assignee_id INTEGER,
-  assignee_username TEXT,
-  reviewer_username TEXT,
-  reviewers JSONB,
-  labels JSONB,
-  web_url TEXT,
-  has_conflicts BOOLEAN,
-  blocking_discussions_resolved BOOLEAN,
-  work_in_progress BOOLEAN,
-  draft BOOLEAN,
-  merge_status TEXT,
-  raw_data JSONB,
-  inserted_at TIMESTAMPTZ DEFAULT NOW(),
-  last_updated TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_gitlab_mr_id ON ${this.mergeRequestsTableName}(gitlab_mr_id);
-CREATE INDEX idx_project_id_mr ON ${this.mergeRequestsTableName}(project_id);
-CREATE INDEX idx_reviewer_username ON ${this.mergeRequestsTableName}(reviewer_username);
-CREATE INDEX idx_state ON ${this.mergeRequestsTableName}(state);
-CREATE INDEX idx_updated_at_mr ON ${this.mergeRequestsTableName}(updated_at);
-        `);
         return false;
       }
 
