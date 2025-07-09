@@ -33,17 +33,13 @@ switch (command) {
     console.log('Usage: gitlab-poller [command] [options]');
     console.log('\nAvailable commands:');
     console.log('  start                      Start polling GitLab events');
-    console.log('  merge-requests <username>  Poll open merge requests for a reviewer');
-    console.log('  migrate                    Run database migrations');
     console.log('  help                       Show this help message');
     console.log('  version                    Show version information');
     console.log('\nEnvironment variables required:');
     console.log('  GITLAB_ACCESS_TOKEN  Your GitLab personal access token');
-    console.log('  SUPABASE_URL         Your Supabase project URL');
-    console.log('  SUPABASE_SECRET_KEY  Your Supabase secret key');
+    console.log('  GITLAB_GROUP_ID      ID of the GitLab group to poll');
     console.log('\nOptional environment variables:');
-    console.log('  GITLAB_BASE_URL      GitLab instance URL (default: https://gitlab.com)');
-    console.log('  GITLAB_PROJECT_ID    GitLab project ID (optional, polls all accessible if not set)');
+    console.log('  GITLAB_BASE_URL        GitLab base URL (default: https://gitlab.com)');
     console.log('  POLLING_INTERVAL     Polling interval in minutes (default: 1)');
     break;
 
