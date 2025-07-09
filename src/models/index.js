@@ -1,10 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-const process = require('process');
 const os = require('os');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
 const config = {
   dialect: 'sqlite',
   storage: path.join(os.homedir(), '.gitlab-poller', 'db.sqlite'),

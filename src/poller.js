@@ -48,6 +48,9 @@ class GitLabPoller {
                             mergeRequest.iid
                         );
 
+                        if(!existingMR) {
+                            console.log(`New merge request: ${mergeRequest.web_url}`);
+                        }
                         // If it exists and has been updated, print the URL
                         if (existingMR && existingMR.updated_at !== mergeRequest.updated_at) {
                             console.log(`Merge request updated: ${mergeRequest.web_url}`);

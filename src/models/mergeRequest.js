@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const MergeRequest = sequelize.define('MergeRequest', {
+  return sequelize.define('MergeRequest', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -63,6 +63,4 @@ module.exports = (sequelize, DataTypes) => {
       }
     ]
   });
-
-  return MergeRequest;
 };
