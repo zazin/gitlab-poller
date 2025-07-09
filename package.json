@@ -2,7 +2,7 @@
   "name": "gitlab-poller",
   "version": "1.0.0",
   "description": "A CLI tool for polling GitLab",
-  "main": "index.js",
+  "main": "./bin/index.js",
   "bin": {
     "gitlab-poller": "./bin/index.js"
   },

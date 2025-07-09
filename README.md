@@ -28,3 +28,10 @@ Or use directly with npx:
 ```bash
 npx gitlab-poller
 ```
+
+Running the command without arguments will automatically start the GitLab poller. You can still use specific commands if needed:
+
+```bash
+npx gitlab-poller help    # Show help information
+npx gitlab-poller version # Show version information
+```
