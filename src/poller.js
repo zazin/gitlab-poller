@@ -14,7 +14,6 @@ class GitLabPoller {
             console.log('GitLab Poller initialized successfully');
             console.log(`Polling interval: ${config.gitlab.pollingInterval / 60000} minute(s)`);
             console.log(`GitLab URL: ${config.gitlab.baseUrl}`);
-            console.log(`Scope: ${config.gitlab.projectId ? `Project ${config.gitlab.projectId}` : 'All accessible projects'}`);
 
             return true;
         } catch (error) {

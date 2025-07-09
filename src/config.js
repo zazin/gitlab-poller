@@ -4,7 +4,6 @@ const config = {
   gitlab: {
     baseUrl: process.env.GITLAB_BASE_URL || 'https://gitlab.com',
     accessToken: process.env.GITLAB_ACCESS_TOKEN,
-    projectId: process.env.GITLAB_PROJECT_ID || null, // Optional for multi-project setups
     pollingInterval: parseInt(process.env.POLLING_INTERVAL || '1', 10) * 60 * 1000, // Convert minutes to milliseconds, default 1 minute
   },
 };
