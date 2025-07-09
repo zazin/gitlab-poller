@@ -34,42 +34,6 @@ switch (command) {
     });
     break;
 
-  case 'merge-requests':
-    if (args.length < 2) {
-      console.error('Error: Reviewer username is required');
-      console.log('Usage: gitlab-poller merge-requests <username>');
-      process.exit(1);
-    }
-    
-    const MergeRequestPoller = require('../src/merge-request-poller');
-    const mrPoller = new MergeRequestPoller();
-    const reviewerUsername = args[1];
-    
-    mrPoller.start(reviewerUsername).catch(error => {
-      console.error('Failed to start merge request poller:', error.message);
-      process.exit(1);
-    });
-    break;
-
-  case 'migrate':
-    const SupabaseClient = require('../src/supabase-client');
-    const migrationClient = new SupabaseClient();
-    
-    console.log('Running database migrations...');
-    migrationClient.runMigrations().then(success => {
-      if (success) {
-        console.log('Migration completed successfully');
-        process.exit(0);
-      } else {
-        console.error('Migration failed');
-        process.exit(1);
-      }
-    }).catch(error => {
-      console.error('Migration error:', error.message);
-      process.exit(1);
-    });
-    break;
-
   case 'help':
     console.log('Usage: gitlab-poller [command] [options]');
     console.log('\nAvailable commands:');
