@@ -16,12 +16,12 @@ if (fs.existsSync(homeEnvPath)) {
 // Function to load config from old config file format (for backward compatibility)
 function loadConfigFromFile() {
   const configPath = path.join(os.homedir(), '.gitlab-poller', 'config');
-  
+
   if (fs.existsSync(configPath)) {
     try {
       const fileContent = fs.readFileSync(configPath, 'utf8');
       const fileConfig = {};
-      
+
       // Parse the config file (key=value format)
       fileContent.split('\n').forEach(line => {
         line = line.trim();
@@ -32,7 +32,7 @@ function loadConfigFromFile() {
           }
         }
       });
-      
+
       console.log(`[config] Loaded configuration from ${configPath} (legacy format)`);
       return fileConfig;
     } catch (error) {
@@ -40,7 +40,7 @@ function loadConfigFromFile() {
       return {};
     }
   }
-  
+
   return {};
 }
 
@@ -53,6 +53,7 @@ const config = {
     baseUrl: fileConfig.GITLAB_BASE_URL || process.env.GITLAB_BASE_URL || 'https://gitlab.com',
     accessToken: fileConfig.GITLAB_ACCESS_TOKEN || process.env.GITLAB_ACCESS_TOKEN,
     groupId: fileConfig.GITLAB_GROUP_ID || process.env.GITLAB_GROUP_ID,
+    reviewerId: fileConfig.GITLAB_REVIEWER_ID || process.env.GITLAB_REVIEWER_ID,
     pollingInterval: parseInt(fileConfig.POLLING_INTERVAL || process.env.POLLING_INTERVAL || '1', 10) * 60 * 1000, // Convert minutes to milliseconds, default 1 minute
   },
 };
@@ -61,6 +62,7 @@ function validateConfig() {
   const required = [
     ['GITLAB_ACCESS_TOKEN', config.gitlab.accessToken],
     ['GITLAB_GROUP_ID', config.gitlab.groupId],
+    ['GITLAB_REVIEWER_ID', config.gitlab.reviewerId],
   ];
 
   const missing = required.filter(([name, value]) => !value);

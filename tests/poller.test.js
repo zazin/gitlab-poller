@@ -28,7 +28,8 @@ describe('GitLabPoller', () => {
         mockConfig = {
             gitlab: {
                 pollingInterval: 60000,
-                baseUrl: 'https://gitlab.example.com'
+                baseUrl: 'https://gitlab.example.com',
+                reviewerId: 'config-reviewer-id'
             }
         };
 
@@ -164,6 +165,40 @@ describe('GitLabPoller', () => {
             // Assert
             expect(mockLogger.log).toHaveBeenCalledWith('Polling already in progress, skipping...');
             expect(mockGitlabClient.getMergeRequestsByReviewer).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('constructor', () => {
+        it('should use reviewerId from config when not provided in options', () => {
+            // Arrange & Act
+            const pollerWithoutReviewerId = new GitLabPoller({
+                gitlabClient: mockGitlabClient,
+                db: mockDb,
+                notifier: mockNotifier,
+                config: mockConfig,
+                validateConfig: mockValidateConfig,
+                logger: mockLogger
+                // No reviewerId provided in options
+            });
+
+            // Assert
+            expect(pollerWithoutReviewerId.reviewerId).toBe('config-reviewer-id');
+        });
+
+        it('should use reviewerId from options when provided', () => {
+            // Arrange & Act
+            const pollerWithReviewerId = new GitLabPoller({
+                gitlabClient: mockGitlabClient,
+                db: mockDb,
+                notifier: mockNotifier,
+                config: mockConfig,
+                validateConfig: mockValidateConfig,
+                logger: mockLogger,
+                reviewerId: 'options-reviewer-id'
+            });
+
+            // Assert
+            expect(pollerWithReviewerId.reviewerId).toBe('options-reviewer-id');
         });
     });
 });

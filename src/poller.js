@@ -11,7 +11,7 @@ class GitLabPoller {
         this.config = options.config || config;
         this.validateConfig = options.validateConfig || validateConfig;
         this.logger = options.logger || console;
-        this.reviewerId = options.reviewerId || '22347527';
+        this.reviewerId = options.reviewerId || this.config.gitlab.reviewerId;
         this.intervalId = null;
         this.isPolling = false;
     }
