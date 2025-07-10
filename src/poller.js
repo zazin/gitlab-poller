@@ -55,22 +55,19 @@ class GitLabPoller {
                             mergeRequest.iid
                         );
 
-                        if(!existingMR) {
-                            this.logger.log(`New merge request: ${mergeRequest.web_url}`);
+                        // If it exists and has been updated, print the URL
+                        if (!existingMR || existingMR && existingMR.updated_at !== mergeRequest.updated_at) {
+                            this.logger.log(`Merge request: ${mergeRequest.web_url}`);
 
                             // Send macOS notification
                             this.notifier.notify({
-                                title: 'New Merge Request',
+                                title: 'Merge Request',
                                 message: `${mergeRequest.title}`,
                                 subtitle: `From: ${mergeRequest.author.name}`,
                                 sound: true,
                                 wait: true,
                                 open: mergeRequest.web_url
                             });
-                        }
-                        // If it exists and has been updated, print the URL
-                        if (existingMR && existingMR.updated_at !== mergeRequest.updated_at) {
-                            this.logger.log(`Merge request updated: ${mergeRequest.web_url}`);
                         }
 
                         // Save the merge request to the database
