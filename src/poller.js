@@ -4,56 +4,62 @@ const db = require('./db');
 const notifier = require('node-notifier');
 
 class GitLabPoller {
-    constructor() {
-        this.gitlabClient = new GitLabClient();
+    constructor(options = {}) {
+        this.gitlabClient = options.gitlabClient || new GitLabClient();
+        this.db = options.db || db;
+        this.notifier = options.notifier || notifier;
+        this.config = options.config || config;
+        this.validateConfig = options.validateConfig || validateConfig;
+        this.logger = options.logger || console;
+        this.reviewerId = options.reviewerId || '22347527';
         this.intervalId = null;
         this.isPolling = false;
     }
 
     async initialize() {
         try {
-            validateConfig();
-            console.log('GitLab Poller initialized successfully');
-            console.log(`Polling interval: ${config.gitlab.pollingInterval / 60000} minute(s)`);
-            console.log(`GitLab URL: ${config.gitlab.baseUrl}`);
+            this.validateConfig();
+            this.logger.log('GitLab Poller initialized successfully');
+            this.logger.log(`Polling interval: ${this.config.gitlab.pollingInterval / 60000} minute(s)`);
+            this.logger.log(`GitLab URL: ${this.config.gitlab.baseUrl}`);
 
             return true;
         } catch (error) {
-            console.error('Failed to initialize poller:', error.message);
+            this.logger.error('Failed to initialize poller:', error.message);
             return false;
         }
     }
 
     async poll() {
         if (this.isPolling) {
-            console.log('Polling already in progress, skipping...');
+            this.logger.log('Polling already in progress, skipping...');
             return;
         }
 
         this.isPolling = true;
 
         try {
-            console.log(`[${new Date().toISOString()}] Polling GitLab events...`);
+            this.logger.log(`[${new Date().toISOString()}] Polling GitLab events...`);
 
             let mergeRequests;
-            mergeRequests = await this.gitlabClient.getMergeRequestsByReviewer('22347527');
+            mergeRequests = await this.gitlabClient.getMergeRequestsByReviewer(this.reviewerId);
 
             if (mergeRequests.length > 0) {
-                console.log(`Found ${mergeRequests.length} merge requests`);
+                this.logger.log(`Found ${mergeRequests.length} merge requests`);
 
                 for (const mergeRequest of mergeRequests) {
                     try {
                         // Check if this merge request exists in the database
-                        const existingMR = await db.getMergeRequestByProjectAndIid(
+                        const existingMR = await this.db.getMergeRequestByProjectAndIid(
                             mergeRequest.project_id, 
                             mergeRequest.iid
                         );
 
                         if(!existingMR) {
-                            console.log(`New merge request: ${mergeRequest.web_url}`);
-                            
+                            this.logger.log(`New merge request: ${mergeRequest.web_url}`);
+
                             // Send macOS notification
-                            notifier.notify({
+                            this.notifier.notify({
                                 title: 'New Merge Request',
                                 message: `${mergeRequest.title}`,
                                 subtitle: `From: ${mergeRequest.author.name}`,
@@ -64,20 +70,20 @@ class GitLabPoller {
                         }
                         // If it exists and has been updated, print the URL
                         if (existingMR && existingMR.updated_at !== mergeRequest.updated_at) {
-                            console.log(`Merge request updated: ${mergeRequest.web_url}`);
+                            this.logger.log(`Merge request updated: ${mergeRequest.web_url}`);
                         }
 
                         // Save the merge request to the database
-                        await db.saveMergeRequest(mergeRequest);
+                        await this.db.saveMergeRequest(mergeRequest);
                     } catch (error) {
-                        console.error(`Error processing merge request ${mergeRequest.iid}:`, error.message);
+                        this.logger.error(`Error processing merge request ${mergeRequest.iid}:`, error.message);
                     }
                 }
             } else {
-                console.log('No merge requests found');
+                this.logger.log('No merge requests found');
             }
         } catch (error) {
-            console.error('Polling error:', error.message);
+            this.logger.error('Polling error:', error.message);
         } finally {
             this.isPolling = false;
         }
@@ -95,10 +101,10 @@ class GitLabPoller {
         // Set up interval
         this.intervalId = setInterval(() => {
             this.poll();
-        }, config.gitlab.pollingInterval);
+        }, this.config.gitlab.pollingInterval);
 
-        console.log('GitLab poller started successfully');
-        console.log('Press Ctrl+C to stop');
+        this.logger.log('GitLab poller started successfully');
+        this.logger.log('Press Ctrl+C to stop');
 
         // Handle a graceful shutdown
         process.on('SIGINT', () => {
@@ -119,18 +125,18 @@ class GitLabPoller {
 
             // Close the database connection
             try {
-                const closeResult = db.close();
+                const closeResult = this.db.close();
                 if (closeResult && typeof closeResult.then === 'function') {
                     closeResult.catch(error => {
-                        console.error('Error closing database connection:', error.message);
+                        this.logger.error('Error closing database connection:', error.message);
                     });
                 }
-                console.log('Database connection closed');
+                this.logger.log('Database connection closed');
             } catch (error) {
-                console.error('Error closing database connection:', error.message);
+                this.logger.error('Error closing database connection:', error.message);
             }
 
-            console.log('\nGitLab poller stopped');
+            this.logger.log('\nGitLab poller stopped');
         }
     }
 }
