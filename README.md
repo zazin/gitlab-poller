@@ -1,33 +1,19 @@
 # @zazin/gitlab-poller
 
-A CLI tool for polling GitLab events and merge requests, storing them in a SQLite database
+A CLI tool for polling GitLab events and merge requests, keeping you notified of changes to merge requests you're reviewing.
 
-## Features
+## What It Does
 
-- Poll open merge requests by reviewer username
-- Store merge requests in a SQLite database using Sequelize ORM
-- Database migration support for schema changes
-- Detect changes in merge requests and print their URLs when updated
-- Configurable polling interval (default: 1 minute)
-- Resume from the last processed event
-- Support for self-hosted GitLab instances
+The GitLab Poller monitors open merge requests and notifies you when they're updated. Run the tool, and it will:
 
-## How It Works
+- Check for merge requests assigned to you for review
+- Track changes to those merge requests
+- Print URLs of updated merge requests so you can quickly review them
+- Run continuously in the background, checking every minute
 
-The application polls GitLab for open merge requests at regular intervals. When a merge request is found:
+## Quick Start
 
-1. It checks if the merge request exists in the local SQLite database
-2. If it exists and has been updated (based on the `updated_at` timestamp), it prints the merge request URL
-3. It saves the merge request data to the database for future comparison
-
-This allows you to be notified when there are changes to merge requests you're reviewing.
-
-## Requirements
-
-- Node.js >= 20.0.0
-- GitLab personal access token with `api` scope
-
-## Installation
+### 1. Install
 
 Install globally via npm:
 
@@ -35,60 +21,64 @@ Install globally via npm:
 npm install -g @zazin/gitlab-poller
 ```
 
-Or use directly with npx:
+Or use directly with npx (no installation required):
 
 ```bash
 npx @zazin/gitlab-poller
 ```
 
-Running the command without arguments will automatically start the GitLab poller. You can still use specific commands if needed:
+### 2. Configure
+
+Set your GitLab reviewer ID and access token:
 
 ```bash
-npx @zazin/gitlab-poller help    # Show help information
-npx @zazin/gitlab-poller version # Show version information
+export GITLAB_REVIEWER_ID="your-username"
+export GITLAB_TOKEN="your-gitlab-token"
 ```
 
-## Database Migrations
-
-The application uses Sequelize ORM for database operations and supports database migrations for schema changes. This makes it easy to upgrade the database schema when new versions are released.
-
-### Running Migrations
-
-To run database migrations:
+For self-hosted GitLab instances:
 
 ```bash
-npm run db:migrate
+export GITLAB_URL="https://your-gitlab-instance.com"
 ```
 
-### Creating New Migrations
+### 3. Run
 
-If you need to create a new migration:
+Start the poller:
 
 ```bash
-npm run db:create:migration your-migration-name
+gitlab-poller
 ```
 
-This will create a new migration file in the `db/migrations` directory. You can then edit this file to define your schema changes.
-
-### Reverting Migrations
-
-To revert the most recent migration:
+Or with npx:
 
 ```bash
-npm run db:migrate:undo
+npx @zazin/gitlab-poller
 ```
 
-To revert all migrations:
+That's it! The tool will start monitoring and notify you of any changes.
 
-```bash
-npm run db:migrate:undo:all
-```
+## Requirements
 
-You can also use the Sequelize CLI directly if you prefer:
+- Node.js >= 20.0.0
+- GitLab personal access token with `api` scope
+- Your GitLab username/reviewer ID
 
-```bash
-npx sequelize-cli db:migrate
-npx sequelize-cli migration:generate --name your-migration-name
-npx sequelize-cli db:migrate:undo
-npx sequelize-cli db:migrate:undo:all
-```
+## Configuration
+
+The tool requires a few environment variables to work:
+
+- `GITLAB_REVIEWER_ID`: Your GitLab username
+- `GITLAB_TOKEN`: Your GitLab personal access token
+- `GITLAB_URL`: Your GitLab instance URL (optional, defaults to gitlab.com)
+
+You can set these as environment variables or create a `.env` file in `~/.gitlab-poller/`.
+
+For detailed configuration options, see [Configuration Documentation](docs/configuration.md).
+
+## Technical Documentation
+
+For developers and advanced users:
+
+- [Database Migrations](docs/database-migrations.md) - Database schema management
+- [Configuration](docs/configuration.md) Detailed configuration options
