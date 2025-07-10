@@ -75,7 +75,7 @@ class Setup {
 
     console.log('\n✅ Configuration saved successfully!');
     console.log(`📁 Config location: ${this.envPath}`);
-    console.log('\nYou can now run: npx gitlab-poller\n');
+    console.log('\nYou can now run: npx @zazin/gitlab-poller\n');
 
     return true;
   }

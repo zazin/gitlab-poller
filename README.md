@@ -1,4 +1,4 @@
-# gitlab-poller
+# @zazin/gitlab-poller
 
 A CLI tool for polling GitLab events and merge requests, storing them in a SQLite database
 
@@ -32,20 +32,20 @@ This allows you to be notified when there are changes to merge requests you're r
 Install globally via npm:
 
 ```bash
-npm install -g gitlab-poller
+npm install -g @zazin/gitlab-poller
 ```
 
 Or use directly with npx:
 
 ```bash
-npx gitlab-poller
+npx @zazin/gitlab-poller
 ```
 
 Running the command without arguments will automatically start the GitLab poller. You can still use specific commands if needed:
 
 ```bash
-npx gitlab-poller help    # Show help information
-npx gitlab-poller version # Show version information
+npx @zazin/gitlab-poller help    # Show help information
+npx @zazin/gitlab-poller version # Show version information
 ```
 
 ## Database Migrations

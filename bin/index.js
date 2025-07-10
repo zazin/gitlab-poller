@@ -53,7 +53,7 @@ switch (command) {
     break;
 
   case 'help':
-    console.log('Usage: gitlab-poller [command] [options]');
+    console.log('Usage: @zazin/gitlab-poller [command] [options]');
     console.log('\nAvailable commands:');
     console.log('  start                      Start polling GitLab events');
     console.log('  setup                      Run the configuration setup wizard');
@@ -72,11 +72,11 @@ switch (command) {
 
   case 'version':
     const package = require('../package.json');
-    console.log(`gitlab-poller v${package.version}`);
+    console.log(`@zazin/gitlab-poller v${package.version}`);
     break;
 
   default:
     console.error(`Unknown command: ${command}`);
-    console.log('Run "gitlab-poller help" for usage information.');
+    console.log('Run "@zazin/gitlab-poller help" for usage information.');
     process.exit(1);
 }

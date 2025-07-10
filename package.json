@@ -1,5 +1,5 @@
 {
-  "name": "gitlab-poller",
+  "name": "@zazin/gitlab-poller",
   "version": "1.0.0",
   "description": "A CLI tool for polling GitLab",
   "main": "./bin/index.js",
