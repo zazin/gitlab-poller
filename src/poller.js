@@ -1,6 +1,7 @@
 const GitLabClient = require('./gitlab-client');
 const {config, validateConfig} = require('./config');
 const db = require('./db');
+const notifier = require('node-notifier');
 
 class GitLabPoller {
     constructor() {
@@ -50,6 +51,16 @@ class GitLabPoller {
 
                         if(!existingMR) {
                             console.log(`New merge request: ${mergeRequest.web_url}`);
+                            
+                            // Send macOS notification
+                            notifier.notify({
+                                title: 'New Merge Request',
+                                message: `${mergeRequest.title}`,
+                                subtitle: `From: ${mergeRequest.author.name}`,
+                                sound: true,
+                                wait: true,
+                                open: mergeRequest.web_url
+                            });
                         }
                         // If it exists and has been updated, print the URL
                         if (existingMR && existingMR.updated_at !== mergeRequest.updated_at) {
@@ -108,7 +119,12 @@ class GitLabPoller {
 
             // Close the database connection
             try {
-                db.close();
+                const closeResult = db.close();
+                if (closeResult && typeof closeResult.then === 'function') {
+                    closeResult.catch(error => {
+                        console.error('Error closing database connection:', error.message);
+                    });
+                }
                 console.log('Database connection closed');
             } catch (error) {
                 console.error('Error closing database connection:', error.message);
